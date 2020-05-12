@@ -37,19 +37,38 @@ The counter will use the Inference Engine included in the Intel® Distribution o
 
 ### Install Intel® Distribution of OpenVINO™ toolkit
 
-Utilize the classroom workspace, or refer to the relevant instructions for your operating system for this step.
+See this [guide](https://docs.openvinotoolkit.org/latest/) for installing openvino.
 
-- [Linux/Ubuntu](./linux-setup.md)
-- [Mac](./mac-setup.md)
-- [Windows](./windows-setup.md)
+##### Install Nodejs and its depedencies
 
-### Install Nodejs and its dependencies
+- This step is only required if the user previously used Chris Lea's Node.js PPA.
 
-Utilize the classroom workspace, or refer to the relevant instructions for your operating system for this step.
+	```
+	sudo add-apt-repository -y -r ppa:chris-lea/node.js
+	sudo rm -f /etc/apt/sources.list.d/chris-lea-node_js-*.list
+	sudo rm -f /etc/apt/sources.list.d/chris-lea-node_js-*.list.save
+	```
+- To install Nodejs and Npm, run the below commands:
+	```
+	curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+	VERSION=node_6.x
+	DISTRO="$(lsb_release -s -c)"
+	echo "deb https://deb.nodesource.com/$VERSION $DISTRO main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+	echo "deb-src https://deb.nodesource.com/$VERSION $DISTRO main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list
+	sudo apt-get update
+	sudo apt-get install nodejs
+	```
 
-- [Linux/Ubuntu](./linux-setup.md)
-- [Mac](./mac-setup.md)
-- [Windows](./windows-setup.md)
+##### Install the following dependencies
+
+```
+sudo apt update
+sudo apt-get install python3-pip
+pip3 install numpy
+pip3 install paho-mqtt
+sudo apt install libzmq3-dev libkrb5-dev
+sudo apt install ffmpeg
+```
 
 ### Install npm
 
