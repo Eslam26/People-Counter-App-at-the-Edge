@@ -248,7 +248,7 @@ def infer_on_stream(args, client):
             AverageNow = AverageNow.mean(axis=0)
             current_value = int((np.abs(RoomWithNoBodyAverage / AverageNow)) * 10000)
 
-            """when someone exits the frame"""
+            # when someone exits the frame
             if current_count == 0 and current_value > 10017 and prev_value < 10015 and person_entered_flag == False:
                 if flag_zero_count == False:
                     value555 = (counter_inter * detectedTimeStart) / 2
