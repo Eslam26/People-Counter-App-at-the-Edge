@@ -107,21 +107,21 @@ def draw_boxes(frame, result, args, width, height, prevAverageColor, personEnter
     currentAverageColor = prevAverageColor
     """Looping over the results"""
     for box in result[0][0]:  # Output shape is 1x1x100x7
-        """get threshold of given boundary box"""
+        #get threshold of given boundary box
         conf = box[2]
-        """get label class of the result when it equals to one ( human label ), the condition becomes true"""
+        #get label class of the result when it equals to one ( human label ), the condition becomes true
         if box[1] == 1:
-            """if the threshold is bigger than or equal to desired threshold"""
+            #if the threshold is bigger than or equal to desired threshold
             if conf >= args.prob_threshold:
-                """Pre-process the output"""
+                #Pre-process the output
                 xmin = int(box[3] * width)
                 ymin = int(box[4] * height)
                 xmax = int(box[5] * width)
                 ymax = int(box[6] * height)
-                """Draw boundary box"""
+                #Draw boundary box
                 cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (255, 0, 255), 1)
                 if (xmin < width) and (xmax < width) and (ymin < height) and (ymax < height):
-                    """get the average color of the boundary box and do some operations on it"""
+                    #get the average color of the boundary box and do some operations on it
                     imgCropped = frame[xmin:xmax, ymin:ymax]
                     currentAverageColor = Get_Average_Color(imgCropped)
                     difference = np.absolute(np.subtract(currentAverageColor, prevAverageColor))
@@ -176,19 +176,19 @@ def infer_on_stream(args, client):
     :param client: MQTT client
     :return: None
     """
-    currentAverageColor = 0
-    personEnteredFlag = 0
-    personStateOut = False
-    startTime = 0
+    current_average_color = 0
+    person_entered_flag = 0
+    person_state_out = False
+    start_time = 0
     duration = 0
     lastPeopleCount = 0
-    totalPeopleCount = 0
+    total_people_count = 0
     stopPerson = True
     prevDuration = 0
-    flagZeroCount = False
-    currentValue = 0
-    prevValue = 0
-    counterINTER = 0
+    flag_zero_count = False
+    current_value = 0
+    prev_value = 0
+    counter_inter = 0
     single_image_mode = False
     # Initialise the class
     infer_network = Network()
@@ -232,12 +232,12 @@ def infer_on_stream(args, client):
         if infer_network.wait() == 0:
             ### TODO: Get the results of the inference request ###
             detectedTimeStart = time.time() - interferenceTimeStart
-            counterINTER = counterINTER + 1
+            counter_inter = counter_inter + 1
             result = infer_network.get_output()
             ### TODO: Extract any desired stats from the results ###
-            displayFrame, current_count, currentAverageColor, personEnteredFlag, personStateOut, startTime, duration, stopPerson = draw_boxes(
-                displayFrame, result, args, width, height, currentAverageColor, personEnteredFlag, personStateOut,
-                startTime, duration, stopPerson)
+            displayFrame, current_count, current_average_color, person_entered_flag, person_state_out, start_time, duration, stopPerson = draw_boxes(
+                displayFrame, result, args, width, height, current_average_color, person_entered_flag, person_state_out,
+                start_time, duration, stopPerson)
             inf_time_message = "Inference time: {:.3f}ms".format(detectedTimeStart * 1000)
             cv2.putText(displayFrame, inf_time_message, (30, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 30, 30), 1)
             ### TODO: Calculate and send relevant information on ###
@@ -246,40 +246,40 @@ def infer_on_stream(args, client):
             ### Topic "person/duration": key of "duration" ###
             AverageNow = Get_Average_Color(frame)
             AverageNow = AverageNow.mean(axis=0)
-            currentValue = int((np.abs(RoomWithNoBodyAverage / AverageNow)) * 10000)
+            current_value = int((np.abs(RoomWithNoBodyAverage / AverageNow)) * 10000)
 
             """when someone exits the frame"""
-            if current_count == 0 and currentValue > 10017 and prevValue < 10015 and personEnteredFlag == False:
-                if flagZeroCount == False:
-                    value555 = (counterINTER * detectedTimeStart) / 2
-                    duration = int(time.time() - startTime - value555)
+            if current_count == 0 and current_value > 10017 and prev_value < 10015 and person_entered_flag == False:
+                if flag_zero_count == False:
+                    value555 = (counter_inter * detectedTimeStart) / 2
+                    duration = int(time.time() - start_time - value555)
                     client.publish("person/duration", json.dumps({"duration": duration}))
-                    flagZeroCount = True
+                    flag_zero_count = True
                     client.publish("person", json.dumps({"count": int(current_count)}))
 
-            prevValue = currentValue
+            prev_value = current_value
 
             # client.publish("person", json.dumps({"count": int(lastPeopleCount)}))
-            """publishing the current count"""
-            if flagZeroCount == True and personEnteredFlag == False:
+            # publishing the current count
+            if flag_zero_count == True and person_entered_flag == False:
                 client.publish("person", json.dumps({"count": int(current_count)}))
             else:
-                flagZeroCount = False
+                flag_zero_count = False
                 client.publish("person", json.dumps({"count": int(lastPeopleCount)}))
 
-            """When Someone enters the frame"""
-            if personEnteredFlag == True and current_count != 0:
-                if duration != 0 and duration != prevDuration and totalPeopleCount >= 1:
+            # When Someone enters the frame
+            if person_entered_flag == True and current_count != 0:
+                if duration != 0 and duration != prevDuration and total_people_count >= 1:
                     prevDuration = duration
 
-                counterINTER = 0
-                startTime = time.time()
+                counter_inter = 0
+                start_time = time.time()
                 if lastPeopleCount == current_count:
                     if lastPeopleCount != 0:
                         lastPeopleCount = lastPeopleCount - 1
-                totalPeopleCount = totalPeopleCount + current_count - lastPeopleCount
+                total_people_count = total_people_count + current_count - lastPeopleCount
                 lastPeopleCount = current_count
-                client.publish("person", json.dumps({"total": int(totalPeopleCount)}))
+                client.publish("person", json.dumps({"total": int(total_people_count)}))
             if key_pressed == 27:
                 break
 
