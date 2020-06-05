@@ -3,17 +3,24 @@
 |-----------------------|---------------|
 | Programming Language: |  Python 3.5 or 3.6 |
 
+## Contents 
+- [Demo video](#demo-video)
+- [What it does](#what-it-does)
+- [How it works](#how-it-works)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Generating IR files](#generating-ir-files)
+- [Run the application](#run-the-application)
 
-
-## Demo video of Running the App with UI
+## Demo video
 [![demo video](https://img.youtube.com/vi/6l1CCtvwBNU/0.jpg)](https://www.youtube.com/watch?v=6l1CCtvwBNU)
 
 
-## What it Does
+## What it coes
 
 The people counter application will demonstrate how to create a smart video IoT solution using Intel® hardware and software tools. The app will detect people in a designated area, providing the number of people in the frame, average duration of people in frame, and total count.
 
-## How it Works
+## How it works
 
 The counter will use the Inference Engine included in the Intel® Distribution of OpenVINO™ Toolkit. The model used should be able to identify people in a video frame. The app should count the number of people in the current frame, the duration that a person is in the frame (time elapsed between entering and exiting a frame) and the total count of people. It then sends the data to a local web server using the Paho MQTT Python package.
 
